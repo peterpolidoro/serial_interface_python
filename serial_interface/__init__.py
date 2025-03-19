@@ -10,4 +10,4 @@ from serial_interface.__about__ import (
     __url__,
     __version__)
 
-from .serial_interface import ArenaInterface
+from .serial_interface import SerialInterface

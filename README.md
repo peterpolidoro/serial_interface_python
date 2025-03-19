@@ -1,20 +1,20 @@
-- [About](#org7ee6eb5)
-- [Example Usage](#org200ed20)
-- [Installation](#orgb4ce2e8)
-- [Development](#org4a8b2c4)
+- [About](#org0d04690)
+- [Example Usage](#org2325691)
+- [Installation](#orgd1920a7)
+- [Development](#orgb22190b)
 
     <!-- This file is generated automatically from metadata.org -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="org7ee6eb5"></a>
+<a id="org0d04690"></a>
 
 # About
 
 ```markdown
 - Name: serial_interface
 - Description: Extends pyserial to make serial device interfaces.
-- Version: 2.4.1
+- Version: 2.4.3
 - Python Version: 3.10
 - Release Date: 2025-03-19
 - Creation Date: 2018-01-11
@@ -30,7 +30,7 @@
 ```
 
 
-<a id="org200ed20"></a>
+<a id="org2325691"></a>
 
 # Example Usage
 
@@ -73,7 +73,7 @@ dev.get_device_info()
 ```
 
 
-<a id="orgb4ce2e8"></a>
+<a id="orgd1920a7"></a>
 
 # Installation
 
@@ -167,7 +167,7 @@ The Python code in this library may be installed in any number of ways, chose on
     ```
 
 
-<a id="org4a8b2c4"></a>
+<a id="orgb22190b"></a>
 
 # Development
 

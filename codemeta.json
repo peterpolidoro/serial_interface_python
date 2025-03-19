@@ -6,7 +6,7 @@
     "dateCreated": "2018-01-11",
     "dateModified": "2025-03-19",
     "name": "serial_interface",
-    "version": "2.4.1",
+    "version": "2.4.3",
     "description": "Extends pyserial to make serial device interfaces.",
     "programmingLanguage": [
         "Python 3"

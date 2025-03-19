@@ -26,7 +26,7 @@ python-serial-interface
 
 #+NAME: version
 #+BEGIN_SRC text :exports none :noweb yes
-2.4.1
+2.4.3
 #+END_SRC
 
 #+NAME: description
@@ -686,10 +686,6 @@ classifiers =
 packages = find:
 install_requires =
     <<python-dependencies>>
-
-[options.entry_points]
-console_scripts =
-    <<command-line-interface>> = <<python-package-name>>.cli:cli
 #+END_SRC
 
 #+HEADER: :tangle (if tangle-external-files "../setup.py" "no")
@@ -733,7 +729,7 @@ from <<python-package-name>>.__about__ import (
     __url__,
     __version__)
 
-from .<<python-package-name>> import ArenaInterface
+from .<<python-package-name>> import SerialInterface
 #+END_SRC
 
 #+NAME: license-text
