@@ -1,27 +1,28 @@
-- [About](#orgded366f)
-- [Example Usage](#org4345892)
-- [Installation](#org33cf4b9)
-- [Development](#org61f135b)
+- [About](#org7ee6eb5)
+- [Example Usage](#org200ed20)
+- [Installation](#orgb4ce2e8)
+- [Development](#org4a8b2c4)
 
     <!-- This file is generated automatically from metadata.org -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="orgded366f"></a>
+<a id="org7ee6eb5"></a>
 
 # About
 
 ```markdown
 - Name: serial_interface
 - Description: Extends pyserial to make serial device interfaces.
-- Version: 2.4.0
-- Release Date: 2024-08-23
+- Version: 2.4.1
+- Python Version: 3.10
+- Release Date: 2025-03-19
 - Creation Date: 2018-01-11
 - License: BSD-3-Clause
 - URL: https://github.com/janelia-python/serial_interface_python
 - Author: Peter Polidoro
 - Email: peter@polidoro.io
-- Copyright: 2024 Howard Hughes Medical Institute
+- Copyright: 2025 Howard Hughes Medical Institute
 - References:
   - https://pyserial.readthedocs.io/en/latest/
 - Dependencies:
@@ -29,7 +30,7 @@
 ```
 
 
-<a id="org4345892"></a>
+<a id="org200ed20"></a>
 
 # Example Usage
 
@@ -72,7 +73,7 @@ dev.get_device_info()
 ```
 
 
-<a id="org33cf4b9"></a>
+<a id="orgb4ce2e8"></a>
 
 # Installation
 
@@ -129,9 +130,9 @@ The Python code in this library may be installed in any number of ways, chose on
 1.  pip
 
     ```sh
-    python3 -m venv ~/venvs/serial_interface
-    source ~/venvs/serial_interface/bin/activate
-    pip install serial_interface
+    python3 -m venv ~/venvs/
+    source ~/venvs//bin/activate
+    pip install 
     ```
 
 2.  guix
@@ -160,13 +161,13 @@ The Python code in this library may be installed in any number of ways, chose on
 1.  pip
 
     ```sh
-    python3 -m venv C:\venvs\serial_interface
-    C:\venvs\serial_interface\Scripts\activate
-    pip install serial_interface
+    python3 -m venv C:\venvs\
+    C:\venvs\\Scripts\activate
+    pip install 
     ```
 
 
-<a id="org61f135b"></a>
+<a id="org4a8b2c4"></a>
 
 # Development
 
@@ -203,7 +204,7 @@ make metadata
 ```sh
 make ipython-shell # PORT=/dev/ttyUSB0
 # make PORT=/dev/ttyUSB1 ipython-shell
-import serial_interface
+import 
 exit
 ```
 

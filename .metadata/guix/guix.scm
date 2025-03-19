@@ -1,4 +1,4 @@
-;; This file is generated automatically from metadata.org
+;; This file is generated automatically from metadata
 ;; File edits may be overwritten!
 (use-modules
  (guix packages)
@@ -13,7 +13,6 @@
  (gnu packages python-xyz)
  (gnu packages version-control)
  (gnu packages ncurses)
- (guix-janelia packages python-janelia)
  (guix-janelia packages python-xyz))
 
 (define %source-dir (dirname (dirname (dirname (current-filename)))))
@@ -35,6 +34,7 @@
                          python-twine
                          python-ipython))
     (propagated-inputs (list
+                        coreutils
                         ncurses
                         python-pyserial))
     (home-page "")

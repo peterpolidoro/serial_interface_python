@@ -9,7 +9,7 @@
 
 * Project Specific Variables                                       :noexport:
 
-#+NAME: name
+#+NAME: python-package-name
 #+BEGIN_SRC text :exports none :noweb yes
 serial_interface
 #+END_SRC
@@ -26,12 +26,17 @@ python-serial-interface
 
 #+NAME: version
 #+BEGIN_SRC text :exports none :noweb yes
-2.4.0
+2.4.1
 #+END_SRC
 
 #+NAME: description
 #+BEGIN_SRC text :exports none :noweb yes
 Extends pyserial to make serial device interfaces.
+#+END_SRC
+
+#+NAME: python-version
+#+BEGIN_SRC text :exports none :noweb yes
+3.10
 #+END_SRC
 
 #+NAME: python-dependencies
@@ -106,9 +111,9 @@ github.com
 https://<<forge>>/<<repository-organization>>/<<repository-name>>
 #+END_SRC
 
-#+NAME: code-repository
+#+NAME: git-clone-url-ssh
 #+BEGIN_SRC text :exports none :noweb yes
-git+<<repository-url>>.git
+git@<<forge>>:<<repository-organization>>/<<repository-name>>.git
 #+END_SRC
 
 #+NAME: author-given-name
@@ -149,9 +154,10 @@ Python 3
 * About
 
 #+BEGIN_SRC markdown :noweb yes
-- Name: <<name>>
+- Name: <<python-package-name>>
 - Description: <<description>>
 - Version: <<version>>
+- Python Version: <<python-version>>
 - Release Date: <<release-date>>
 - Creation Date: <<creation-date>>
 - License: <<license>>
@@ -354,63 +360,30 @@ settings
 
 * Tangled Files                                                    :noexport:
 
-#+BEGIN_SRC text :tangle ../AUTHORS :exports none :noweb yes
-<<author>>
-#+END_SRC
-
-#+BEGIN_SRC js :tangle ../codemeta.json :exports none :noweb yes
-{
-    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
-    "@type": "SoftwareSourceCode",
-    "license": "https://spdx.org/licenses/<<license>>",
-    "codeRepository": "<<code-repository>>",
-    "dateCreated": "<<creation-date>>",
-    "dateModified": "<<release-date>>",
-    "name": "<<name>>",
-    "version": "<<version>>",
-    "description": "<<description>>",
-    "programmingLanguage": [
-        "<<programming-language>>"
-    ],
-    "author": [
-        {
-            "@type": "Person",
-            "givenName": "<<author-given-name>>",
-            "familyName": "<<author-family-name>>",
-            "email": "<<email>>",
-            "affiliation": {
-                "@type": "Organization",
-                "name": "<<affiliation>>"
-            }
-        }
-    ]
-}
-#+END_SRC
-
 #+BEGIN_SRC scheme :tangle guix/channels.scm :exports none :noweb yes
-;; This file is generated automatically from metadata.org
+;; This file is generated automatically from metadata
 ;; File edits may be overwritten!
 (list (channel
-        (name 'guix)
-        (url "https://git.savannah.gnu.org/git/guix.git")
-        (branch "master")
-        (commit
-          "eb329c946181557f3dd63195d4938592ef9f4f98")
-        (introduction
-          (make-channel-introduction
-            "9edb3f66fd807b096b48283debdcddccfea34bad"
-            (openpgp-fingerprint
-              "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
-      (channel
         (name 'guix-janelia)
         (url "https://github.com/guix-janelia/guix-janelia.git")
         (branch "main")
         (commit
-          "a082913f2dcfd0aa7d1922e780880505aaf3e2d9")))
+          "00269482830083a52441bbacda39e1fb70fb017f"))
+      (channel
+        (name 'guix)
+        (url "https://git.savannah.gnu.org/git/guix.git")
+        (branch "master")
+        (commit
+          "cbd2db98954739db1cdda208e1667c5d50976bf1")
+        (introduction
+          (make-channel-introduction
+            "9edb3f66fd807b096b48283debdcddccfea34bad"
+            (openpgp-fingerprint
+              "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))))
 #+END_SRC
 
 #+BEGIN_SRC scheme :tangle guix/guix.scm :exports none :noweb yes
-;; This file is generated automatically from metadata.org
+;; This file is generated automatically from metadata
 ;; File edits may be overwritten!
 (use-modules
  (guix packages)
@@ -425,7 +398,6 @@ settings
  (gnu packages python-xyz)
  (gnu packages version-control)
  (gnu packages ncurses)
- (guix-janelia packages python-janelia)
  (guix-janelia packages python-xyz))
 
 (define %source-dir (dirname (dirname (dirname (current-filename)))))
@@ -447,6 +419,7 @@ settings
                          python-twine
                          python-ipython))
     (propagated-inputs (list
+                        coreutils
                         ncurses
                         <<guix-dependencies>>))
     (home-page "")
@@ -457,62 +430,161 @@ settings
 python-dev-package
 #+END_SRC
 
+#+BEGIN_SRC text :tangle docker/Dockerfile.dev :exports none :noweb yes
+# first stage
+FROM python:<<python-version>>-slim AS builder
+COPY requirements.txt .
+
+# install dependencies to the local user directory (eg. /root/.local)
+RUN pip install --user -r requirements.txt
+RUN pip install --user ipython
+
+# second unnamed stage
+FROM python:<<python-version>>-slim
+WORKDIR /<<repository-name>>
+
+# copy only the dependencies installation from the 1st stage image
+COPY --from=builder /root/.local /root/.local
+COPY ./ .
+
+# update PATH environment variable
+ENV PATH=/root/.local/bin:$PATH
+
+CMD ["bash"]
+#+END_SRC
+
+#+BEGIN_SRC text :tangle docker/Dockerfile :exports none :noweb yes
+FROM <<python-package-name>>-dev
+WORKDIR /<<repository-name>>
+
+RUN pip install --user .
+
+CMD ["bash"]
+#+END_SRC
+
+#+BEGIN_SRC text :tangle ../Makefile :exports none :noweb yes
+# This file is generated automatically from .metadata.org
+# File edits may be overwritten!
+include .metadata/Makefile
+#+END_SRC
+
 #+BEGIN_SRC text :tangle Makefile :exports none :noweb yes
-# This file is generated automatically from metadata.org
+# This file is generated automatically from metadata
 # File edits may be overwritten!
 
 .PHONY: upload
 upload: metadata package twine add clean
 
-GUIX-SHELL = guix time-machine -C guix/channels.scm -- shell
-DEV = -D -f guix/guix.scm
-GUIX-DEV-SHELL = $(GUIX-SHELL) $(DEV)
+MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
+MAKEFILE_DIR := $(notdir $(patsubst %/,%,$(dir $(MAKEFILE_PATH))))
+GUIX-TIME-MACHINE = guix time-machine -C $(MAKEFILE_DIR)/guix/channels.scm
+GUIX-SHELL = $(GUIX-TIME-MACHINE) -- shell -f $(MAKEFILE_DIR)/guix/guix.scm
+GUIX-DEV-SHELL = $(GUIX-TIME-MACHINE) -- shell -D -f $(MAKEFILE_DIR)/guix/guix.scm
+CONTAINER = --container --network --preserve='^DISPLAY$$' --preserve='^TERM$$'
+GUIX-CONTAINER = $(GUIX-SHELL) $(CONTAINER)
+GUIX-DEV-CONTAINER = $(GUIX-DEV-SHELL) $(CONTAINER)
+VENV-SHELL = rm -rf .venv; mkdir .venv; python3 -m venv .venv; source .venv/bin/activate
+DOCKER-DEV-IMAGE = docker build -f $(MAKEFILE_DIR)/docker/Dockerfile.dev -t <<python-package-name>>-dev .
+DOCKER-DEV-CONTAINER = $(DOCKER-DEV-IMAGE); docker run -it <<python-package-name>>-dev
+DOCKER-IMAGE = $(DOCKER-DEV-IMAGE); docker build -f $(MAKEFILE_DIR)/docker/Dockerfile -t <<python-package-name>> .
+DOCKER-CONTAINER = $(DOCKER-IMAGE); docker run -it <<python-package-name>>
+
+.PHONY: guix-shell
+guix-shell:
+	$(GUIX-SHELL)
 
 .PHONY: guix-dev-shell
 guix-dev-shell:
 	$(GUIX-DEV-SHELL)
 
-.PHONY: ipython-shell
-ipython-shell:
-	$(GUIX-DEV-SHELL) -- ipython
+.PHONY: guix-dev-container
+guix-dev-container:
+	$(GUIX-DEV-CONTAINER)
 
-.PHONY: serial-shell
-serial-shell:
-	$(GUIX-DEV-SHELL) picocom -- picocom -b 9600 -f n -y n -d 8 -p 1 -c $(PORT)
+.PHONY: guix-dev-container-ipython
+guix-dev-container-ipython:
+	$(GUIX-DEV-CONTAINER) -- ipython --no-autoindent
 
-.PHONY: installed-shell
-installed-shell:
-	$(GUIX-SHELL) -f guix/guix.scm --rebuild-cache
+.PHONY: guix-container
+guix-container:
+	$(GUIX-CONTAINER) python-ipython --rebuild-cache
+
+.PHONY: requirements.txt
+requirements.txt:
+	$(GUIX-DEV-CONTAINER) -- $(VENV-SHELL);\
+	pip install .;\
+	pip freeze --local --exclude <<python-package-name>> > requirements.txt;\
+	deactivate;\
+	rm -rf .venv
+
+.PHONY: docker-dev-container
+docker-dev-container:
+	$(DOCKER-DEV-CONTAINER)
+
+.PHONY: docker-dev-container-ipython
+docker-dev-container-ipython:
+	$(DOCKER-DEV-CONTAINER) ipython --no-autoindent
+
+.PHONY: docker-container
+docker-container:
+	$(DOCKER-CONTAINER)
 
 .PHONY: metadata-edits
 metadata-edits:
-	$(GUIX-DEV-SHELL) -- sh -c "emacs -q --no-site-file --no-site-lisp --no-splash -l emacs/init.el --file metadata.org"
+	$(GUIX-DEV-CONTAINER) -- sh -c "emacs -q --no-site-file --no-site-lisp --no-splash -l $(MAKEFILE_DIR)/emacs/init.el --file $(MAKEFILE_DIR)/metadata.org"
 
 .PHONY: metadata
-metadata:
-	$(GUIX-DEV-SHELL) -- sh -c "emacs --batch -Q  -l emacs/init.el --eval '(process-org \"metadata.org\")'"
+metadata: requirements.txt
+	$(GUIX-DEV-CONTAINER) -- sh -c "emacs --batch -Q  -l $(MAKEFILE_DIR)/emacs/init.el --eval '(process-org \"$(MAKEFILE_DIR)/metadata.org\")'"
 
 .PHONY: package
 package:
-	$(GUIX-DEV-SHELL) -- sh -c "python3 setup.py sdist bdist_wheel"
+	$(GUIX-DEV-CONTAINER) -- sh -c "python3 setup.py sdist bdist_wheel"
 
 .PHONY: twine
 twine:
-	$(GUIX-DEV-SHELL) --network --expose=$$HOME/.pypirc -- sh -c "twine upload dist/*"
+	$(GUIX-DEV-CONTAINER) --network --expose=$$HOME/.pypirc --expose=/etc/ssl/certs/ca-certificates.crt -- sh -c "twine upload dist/*"
 
 .PHONY: add
 add:
-	$(GUIX-DEV-SHELL) -- sh -c "git add --all"
+	$(GUIX-DEV-CONTAINER) -- sh -c "git add --all"
 
 .PHONY: clean
 clean:
-	$(GUIX-DEV-SHELL) -- sh -c "git clean -xdf"
+	$(GUIX-DEV-CONTAINER) -- sh -c "git clean -xdf"
+
+PORT = /dev/ttyACM0
+GUIX-DEV-CONTAINER-PORT = $(GUIX-DEV-SHELL) $(CONTAINER) --expose=$(PORT)
+GUIX-CONTAINER-PORT = $(GUIX-SHELL) $(CONTAINER) --expose=$(PORT)
+DOCKER-DEV-CONTAINER-PORT = $(DOCKER-DEV-IMAGE); docker run -it --device=$(PORT) <<python-package-name>>-dev
+DOCKER-CONTAINER-PORT = $(DOCKER-IMAGE); docker run -it --device=$(PORT) <<python-package-name>>
+
+.PHONY: guix-dev-container-port-serial
+guix-dev-container-port-serial:
+	$(GUIX-DEV-CONTAINER-PORT) picocom -- picocom -b 2000000 -f n -y n -d 8 -p 1 -c $(PORT)
+
+.PHONY: guix-dev-container-port-ipython
+guix-dev-container-port-ipython:
+	$(GUIX-DEV-CONTAINER-PORT) -- ipython --no-autoindent
+
+.PHONY: guix-container-port
+guix-container-port:
+	$(GUIX-CONTAINER-PORT) python-ipython --rebuild-cache
+
+.PHONY: docker-dev-container-port-ipython
+docker-dev-container-port-ipython:
+	$(DOCKER-DEV-CONTAINER-PORT) ipython --no-autoindent
+
+.PHONY: docker-container-port
+docker-container-port:
+	$(DOCKER-CONTAINER-PORT)
 #+END_SRC
 
 #+BEGIN_SRC scheme :tangle emacs/init.el :exports none :noweb yes
-;; This file is generated automatically from metadata.org
+;; This file is generated automatically from metadata
 ;; File edits may be overwritten!
 (require 'org)
+(require 'ox-org)
 
 (eval-after-load "org"
   '(require 'ox-gfm nil t))
@@ -529,7 +601,7 @@ clean:
     (error "INFILE must be an org file."))
   (org-babel-tangle-file org-file))
 
-(defun export-org (org-file)
+(defun export-org-to-markdown (org-file)
   "Export org file to gfm file"
   (unless (string= "org" (file-name-extension org-file))
     (error "INFILE must be an org file."))
@@ -540,23 +612,64 @@ clean:
 (defun process-org (org-file)
   "Tangle and export org file"
   (progn (tangle-org org-file)
-         (export-org org-file)))
+         (export-org-to-markdown org-file)))
 
+
+(setq enable-local-variables nil)
+(setq tangle-external-files t)
+(setq python-package-dir (concat "../" "<<python-package-name>>"))
 #+END_SRC
 
-#+BEGIN_SRC text :tangle ../pyproject.toml :exports none :noweb yes
-# This file is generated automatically from metadata.org
+#+HEADER: :tangle (if tangle-external-files "../AUTHORS" "no")
+#+BEGIN_SRC text :exports none :noweb yes
+<<author>>
+#+END_SRC
+
+#+HEADER: :tangle (if tangle-external-files "../codemeta.json" "no")
+#+BEGIN_SRC js :exports none :noweb yes
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "@type": "SoftwareSourceCode",
+    "license": "https://spdx.org/licenses/<<license>>",
+    "codeRepository": "<<repository-url>>",
+    "dateCreated": "<<creation-date>>",
+    "dateModified": "<<release-date>>",
+    "name": "<<python-package-name>>",
+    "version": "<<version>>",
+    "description": "<<description>>",
+    "programmingLanguage": [
+        "<<programming-language>>"
+    ],
+    "author": [
+        {
+            "@type": "Person",
+            "givenName": "<<author-given-name>>",
+            "familyName": "<<author-family-name>>",
+            "email": "<<email>>",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "<<affiliation>>"
+            }
+        }
+    ]
+}
+#+END_SRC
+
+#+HEADER: :tangle (if tangle-external-files "../pyproject.toml" "no")
+#+BEGIN_SRC text :exports none :noweb yes
+# This file is generated automatically from metadata
 # File edits may be overwritten!
 [build-system]
 requires = ["setuptools"]
 build-backed = "setuptools.build_meta"
 #+END_SRC
 
-#+BEGIN_SRC text :tangle ../setup.cfg :exports none :noweb yes
-# This file is generated automatically from metadata.org
+#+HEADER: :tangle (if tangle-external-files "../setup.cfg" "no")
+#+BEGIN_SRC text :exports none :noweb yes
+# This file is generated automatically from metadata
 # File edits may be overwritten!
 [metadata]
-name = <<name>>
+name = <<python-package-name>>
 version = <<version>>
 author = <<author>>
 author_email = <<email>>
@@ -573,11 +686,16 @@ classifiers =
 packages = find:
 install_requires =
     <<python-dependencies>>
+
+[options.entry_points]
+console_scripts =
+    <<command-line-interface>> = <<python-package-name>>.cli:cli
 #+END_SRC
 
-#+BEGIN_SRC python :tangle ../setup.py :exports none :noweb yes
+#+HEADER: :tangle (if tangle-external-files "../setup.py" "no")
+#+BEGIN_SRC python :exports none :noweb yes
 """<<description>>"""
-# This file is generated automatically from metadata.org
+# This file is generated automatically from metadata
 # File edits may be overwritten!
 from setuptools import setup
 
@@ -586,9 +704,10 @@ if __name__ == '__main__':
     setup()
 #+END_SRC
 
-#+BEGIN_SRC python :tangle ../serial_interface/__about__.py :exports none :noweb yes
+#+HEADER: :tangle (if tangle-external-files  (concat python-package-dir "/__about__.py") "no")
+#+BEGIN_SRC python :exports none :noweb yes
 """<<description>>"""
-# This file is generated automatically from metadata.org
+# This file is generated automatically from metadata
 # File edits may be overwritten!
 
 __version__ = '<<version>>'
@@ -600,11 +719,12 @@ __email__ = '<<email>>'
 __copyright__ = '<<copyright>>'
 #+END_SRC
 
-#+BEGIN_SRC python :tangle ../serial_interface/__init__.py :exports none :noweb yes
+#+HEADER: :tangle (if tangle-external-files (concat python-package-dir "/__init__.py") "no")
+#+BEGIN_SRC python :exports none :noweb yes
 """<<description>>"""
-# This file is generated automatically from metadata.org
+# This file is generated automatically from metadata
 # File edits may be overwritten!
-from <<name>>.__about__ import (
+from <<python-package-name>>.__about__ import (
     __author__,
     __copyright__,
     __email__,
@@ -613,10 +733,11 @@ from <<name>>.__about__ import (
     __url__,
     __version__)
 
-from .<<name>> import SerialInterface, SerialInterfaces, find_serial_interface_ports, find_serial_interface_port, WriteFrequencyError, WriteError, ReadError, __version__
+from .<<python-package-name>> import ArenaInterface
 #+END_SRC
 
-#+BEGIN_SRC text :tangle ../LICENSE :exports none :noweb yes
+#+NAME: license-text
+#+BEGIN_SRC text :exports none :noweb yes
 Janelia Open-Source Software (3-clause BSD License)
 
 Copyright <<copyright>>
@@ -646,3 +767,19 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #+END_SRC
+
+#+BEGIN_SRC text :tangle LICENSE :exports none :noweb yes
+<<license-text>>
+#+END_SRC
+
+#+HEADER: :tangle (if tangle-external-files "../LICENSE" "no")
+#+BEGIN_SRC text :exports none :noweb yes
+<<license-text>>
+#+END_SRC
+
+;; Local Variables:
+;; eval: (setq after-save-hook nil)
+;; eval: (setq org-confirm-babel-evaluate nil)
+;; eval: (setq tangle-external-files nil)
+;; eval: (setq python-package-dir "")
+;; End:
