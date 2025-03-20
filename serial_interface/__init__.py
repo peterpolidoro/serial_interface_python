@@ -10,4 +10,4 @@ from serial_interface.__about__ import (
     __url__,
     __version__)
 
-from .serial_interface import SerialInterface
+from .serial_interface import SerialInterface, SerialInterfaces, find_serial_interface_ports, find_serial_interface_port

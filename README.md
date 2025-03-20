@@ -1,22 +1,22 @@
-- [About](#org0d04690)
-- [Example Usage](#org2325691)
-- [Installation](#orgd1920a7)
-- [Development](#orgb22190b)
+- [About](#orgd912604)
+- [Example Usage](#org2ef6f0a)
+- [Installation](#org9227843)
+- [Development](#org3cc84cd)
 
     <!-- This file is generated automatically from metadata.org -->
     <!-- File edits may be overwritten! -->
 
 
-<a id="org0d04690"></a>
+<a id="orgd912604"></a>
 
 # About
 
 ```markdown
 - Name: serial_interface
 - Description: Extends pyserial to make serial device interfaces.
-- Version: 2.4.3
+- Version: 2.4.4
 - Python Version: 3.10
-- Release Date: 2025-03-19
+- Release Date: 2025-03-20
 - Creation Date: 2018-01-11
 - License: BSD-3-Clause
 - URL: https://github.com/janelia-python/serial_interface_python
@@ -30,7 +30,7 @@
 ```
 
 
-<a id="org2325691"></a>
+<a id="org2ef6f0a"></a>
 
 # Example Usage
 
@@ -73,7 +73,7 @@ dev.get_device_info()
 ```
 
 
-<a id="orgd1920a7"></a>
+<a id="org9227843"></a>
 
 # Installation
 
@@ -167,7 +167,7 @@ The Python code in this library may be installed in any number of ways, chose on
     ```
 
 
-<a id="orgb22190b"></a>
+<a id="org3cc84cd"></a>
 
 # Development
 
